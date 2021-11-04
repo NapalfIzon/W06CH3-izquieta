@@ -2,6 +2,8 @@ const chalk = require("chalk");
 const debug = require("debug")("knowledgeThings:indexServer");
 const express = require("express");
 const morgan = require("morgan");
+const developmentRoutes = require("./routes/developmentRoutes");
+const productionRoutes = require("./routes/productionRoutes");
 
 const app = express();
 
@@ -23,5 +25,11 @@ const initializeServer = (portNumber) => {
     }
   });
 };
+
+app.use(morgan("dev"));
+app.use(express.json());
+
+app.use("/development", developmentRoutes);
+app.use("/production", productionRoutes);
 
 module.exports = initializeServer;
