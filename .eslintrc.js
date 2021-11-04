@@ -6,7 +6,7 @@ module.exports = {
   },
   extends: ["airbnb-base", "prettier"],
   parserOptions: {
-    ecmaVersion: 13,
+    ecmaVersion: 12,
   },
   rules: {
     "no-param-reassign": "off",
