@@ -2,16 +2,25 @@ const chalk = require("chalk");
 const debug = require("debug")("knowledgeThings:indexServer");
 const express = require("express");
 const morgan = require("morgan");
+const mongoDbInitialize = require("../database/index");
 const developmentRoutes = require("./routes/developmentRoutes");
 const productionRoutes = require("./routes/productionRoutes");
 
 const app = express();
+let portNumber;
+let enviroment;
+let hasAdminRights;
 
 app.use(morgan("dev"));
 
-const initializeServer = (portNumber) => {
-  const server = app.listen(portNumber, () => {
+const initializeServer = ({ port, db, userType }) => {
+  portNumber = port || 8000;
+  enviroment = db;
+  hasAdminRights = userType;
+
+  const server = app.listen(port, () => {
     debug(chalk.yellow(`Escuchando en el puerto ${portNumber}`));
+    mongoDbInitialize(); // TODO preguntar porque hay que hacerlo así, porque sino se inicializaba solo
   });
 
   server.on("error", (error) => {
@@ -29,7 +38,6 @@ const initializeServer = (portNumber) => {
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.use("/development", developmentRoutes);
-app.use("/production", productionRoutes);
+app.use(`/development`, developmentRoutes);
 
 module.exports = initializeServer;
