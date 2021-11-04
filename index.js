@@ -1,15 +1,37 @@
 require("dotenv").config();
-require("./database/index");
-const program = require("commander");
+const inquirer = require("inquirer");
 const initializeServer = require("./server/index");
 
-program.option("-p, --port <port>");
-program.parse(process.argv);
-const [consolePort] = process.argv.slice(3);
-
-const port =
-  consolePort === undefined
-    ? process.env.SERVER_LOCAL_PORT || 8000
-    : consolePort;
-
-initializeServer(port);
+(async () => {
+  const dbUSerData = await inquirer.prompt([
+    {
+      name: "port",
+      type: "number",
+      message: "¿En qué puerto quieres que se inicie la API?",
+    },
+    {
+      name: "db",
+      type: "list",
+      message: "¿Qué base de datos quieres usar?",
+      choices: [
+        {
+          name: "Pruebas",
+          value: "development",
+        },
+        {
+          name: "Producción",
+          value: "production",
+        },
+      ],
+      default: "Pruebas",
+    },
+    {
+      name: "userType",
+      type: "confirm",
+      message:
+        "¿Quieres permitir que los clientes puedan crear, borrar y modificar?",
+      default: false,
+    },
+  ]);
+  initializeServer(dbUSerData);
+})();
